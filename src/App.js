@@ -22,7 +22,7 @@ export default function App() {
       setFilteredCountries(countries)
     }
     else{
-      setFilteredCountries(countries.filter((country)=>{return country.name.common.includes(search)}))
+      setFilteredCountries(countries.filter((country)=>{return country.name.common.toLowerCase().includes(search.toLowerCase())}))
     }
   },[search,countries])
   const countryCard = {

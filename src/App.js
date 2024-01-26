@@ -1,25 +1,82 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
 
-function App() {
+
+export default function App() {
+  const [countries, setCountries] = useState([]);
+  const [search,setSearch] = useState("");
+  const [filteredCountries,setFilteredCountries] = useState([])
+
+  useEffect(() => {
+    const fetchCountries = async()=>{
+    try {
+      const response = await fetch("https://restcountries.com/v3.1/all");
+      const data = await response.json();
+      setCountries(data);
+  } catch (err) {
+      console.log("Error fetching data: ", err);
+  }}
+  fetchCountries()
+  }, []);
+  useEffect(()=>{
+    if(search === ""){
+      setFilteredCountries(countries)
+    }
+    else{
+      setFilteredCountries(countries.filter((country)=>{return country.name.common.includes(search)}))
+    }
+  },[search,countries])
+  const cardStyle = {
+    width: "200px",
+    border: "1px solid #ccc",
+    borderRadius: "10px",
+    margin: "10px",
+    padding: "10px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  };
+
+  const imageStyle = {
+    width: "100px",
+    height: "100px",
+  };
+
+  const containerStyle = {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+  };
+  const searchstyle ={
+    width:"500px",
+    height:"30px",
+    marginTop:"10px"
+  }
+  const container = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={container}>
+    <div ><input style={searchstyle} type="text" value={search} onChange={(e)=>{
+      setSearch(e.target.value)
+    }} placeholder="Search for countries..."/></div>
+    <div style={containerStyle}>
+      {filteredCountries.map((country) => (
+        <div key={country.cca3} style={cardStyle}>
+          <img
+            src={country.flags.png}
+            alt={`Flag of ${country.name.common}`}
+            style={imageStyle}
+          />
+          <h2>{country.name.common}</h2>
+        </div>
+      ))}
+    </div>
     </div>
   );
 }
-
-export default App;
